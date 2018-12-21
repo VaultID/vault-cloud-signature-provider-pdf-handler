@@ -31,7 +31,6 @@ PDF Handler - Preparer to signature
 }
 ``` 
 |
-|--|--|
 | Response | 
 ```
 {
