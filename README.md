@@ -10,8 +10,9 @@ PDF Handler - Preparer to signature
 |--|--|
 | Method | POST |
 | Headers | Content-Type: application/json |
-| Request | 
-```
+
+``` 
+Request
 {
 	"pdfFile": "/home/paulo/Área de Trabalho/pdfexemplo.pdf",
 	"append": true,
@@ -29,10 +30,8 @@ PDF Handler - Preparer to signature
 	"signerName": "PAULO FILIPE MACEDO DOS SANTOS:04660457192",
 	"subfilter": "adbe.pkcs7.detached"
 }
-``` 
-|
-| Response | 
-```
+
+Response:
 {
 	"pdfFile": "/home/paulo/Área de Trabalho/pdfexemplo.pdf",
 	"detail": {
@@ -42,7 +41,6 @@ PDF Handler - Preparer to signature
     }
 }
 ``` 
-|
 
 
 
