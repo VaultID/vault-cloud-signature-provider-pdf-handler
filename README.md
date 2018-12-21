@@ -14,16 +14,16 @@ PDF Handler - Preparer to signature
 ``` 
 Request
 {
-	"pdfFile": "/home/paulo/Área de Trabalho/pdfexemplo.pdf",
+	"pdfFile": "/tmp/pdfexemplo.pdf",
 	"append": true,
 	"autoFixDocument": true,
 	"isVisibleSignature": true,
-	"imageFile": "/home/paulo/Área de Trabalho/signature.png",
-	"page": "0",
+	"imageFile": "/tmp/signature.png",
+	"page": 1,
 	"x": 355,
 	"y": 782,
 	"width": 230,
-	"heigth": 50,
+	"height": 50,
 	"reason": "My reason",
 	"location": "My location",
 	"contact": "My contact",
@@ -33,12 +33,9 @@ Request
 
 Response:
 {
-	"pdfFile": "/home/paulo/Área de Trabalho/pdfexemplo.pdf",
-	"detail": {
-        "code": 1000,
-        "status": "FILE_PREPARED",
-        "message": ""
-    }
+    "file": "/tmp/pdfexemplo_prepared.pdf",
+    "message": "File prepareted!!!!",
+    "status": "OK"
 }
 ``` 
 
