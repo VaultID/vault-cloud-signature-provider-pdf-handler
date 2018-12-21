@@ -27,7 +27,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the LGPL License.
  */
-package net.sf.jsignpdf;
+package com.vaultid.engine;
 
 import static net.sf.jsignpdf.Constants.L2TEXT_PLACEHOLDER_CONTACT;
 import static net.sf.jsignpdf.Constants.L2TEXT_PLACEHOLDER_LOCATION;
@@ -62,6 +62,8 @@ import com.lowagie.text.pdf.PdfSignatureAppearance;
 import com.lowagie.text.pdf.PdfStamper;
 import com.lowagie.text.pdf.PdfString;
 import java.text.SimpleDateFormat;
+import net.sf.jsignpdf.BasicSignerOptions;
+import net.sf.jsignpdf.Constants;
 
 /**
  * Main logic of signer application. It uses iText to create signature in PDF.
