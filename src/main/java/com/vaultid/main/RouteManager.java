@@ -24,7 +24,8 @@ public class RouteManager {
     };
     
     public static List<String> PUBLIC_ROUTES = Arrays.asList(
-            "prepare-file-to-signature"
+            "prepare-file-to-signature",
+            "prepare-file-form-fields"
     );
 
     

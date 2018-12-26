@@ -1,6 +1,6 @@
 package com.vaultid.controller;
 
-import com.vaultid.engine.PreparePdfToSignLogic;
+import com.vaultid.engine.PreparePdfFieldsLogic;
 import com.vaultid.main.Constants;
 import com.vaultid.server.AbstractController;
 import com.vaultid.server.ApiProblem;
@@ -11,7 +11,7 @@ import org.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
 
 
-public class PrepareFileToSignatureController extends AbstractController {
+public class PrepareFileFormFieldsController extends AbstractController {
 
     /**
      * Create a resource
@@ -110,7 +110,7 @@ public class PrepareFileToSignatureController extends AbstractController {
                 options.setLocation((String) data.get("contact"));
             }
          
-            final PreparePdfToSignLogic signer = new PreparePdfToSignLogic(options);
+            final PreparePdfFieldsLogic signer = new PreparePdfFieldsLogic(options);
 
             if (data.get("signerName") != null) {
                 signer.setSignerName((String) data.get("signerName"));
@@ -120,7 +120,7 @@ public class PrepareFileToSignatureController extends AbstractController {
                 signer.setSubfilter((String) data.get("subfilter"));
             }
             signer.setAutofixDocument(autoFixDocument.equals("true")); //Enable update document before sign (if needed)
-            signer.signFile();
+            signer.prepareFile();
             
             JSONObject obj = new JSONObject();
             obj.put("status", Constants.OK);
