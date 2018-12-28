@@ -72,7 +72,14 @@ Request
 	"location": "My location",
 	"contact": "My contact",
 	"signerName": "PAULO FILIPE MACEDO DOS SANTOS:04660457192",
-	"subfilter": "adbe.pkcs7.detached"
+	"subfilter": "adbe.pkcs7.detached",
+	"fields": [
+		{
+			"name": "myfavoritefield",
+			"type": "text",
+			"value": "I accept this document!"
+		}
+	]
 }
 
 Response:
