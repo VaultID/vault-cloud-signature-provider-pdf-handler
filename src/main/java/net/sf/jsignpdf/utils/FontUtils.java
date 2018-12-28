@@ -38,7 +38,7 @@ import net.sf.jsignpdf.Constants;
 
 import org.apache.commons.io.IOUtils;
 
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.BaseFont;
 
 /**
  * Utilities for handling fonts in visible signature.

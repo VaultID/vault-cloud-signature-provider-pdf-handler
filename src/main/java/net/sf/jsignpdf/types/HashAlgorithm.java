@@ -29,7 +29,7 @@
  */
 package net.sf.jsignpdf.types;
 
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * Enum of hash algorithms supported in PDF signatures.

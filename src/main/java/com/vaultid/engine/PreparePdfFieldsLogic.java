@@ -29,6 +29,7 @@
  */
 package com.vaultid.engine;
 
+import com.itextpdf.text.BaseColor;
 import static net.sf.jsignpdf.Constants.RES;
 
 import java.io.File;
@@ -40,16 +41,29 @@ import java.util.logging.Logger;
 import net.sf.jsignpdf.types.HashAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.AcroFields;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfFormField;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
-import com.lowagie.text.pdf.TextField;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.AcroFields;
+import com.itextpdf.text.pdf.BaseField;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfAcroForm;
+import com.itextpdf.text.pdf.PdfAnnotation;
+import com.itextpdf.text.pdf.PdfAppearance;
+import com.itextpdf.text.pdf.PdfBorderDictionary;
+import com.itextpdf.text.pdf.PdfDocument;
+import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfName;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.PushbuttonField;
+import com.itextpdf.text.pdf.TextField;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.lang.Integer;
+import java.util.HashMap;
 import net.sf.jsignpdf.BasicSignerOptions;
 
 /**
@@ -62,13 +76,13 @@ public class PreparePdfFieldsLogic implements Runnable {
 	private final static Logger LOGGER = Logger.getLogger(PreparePdfFieldsLogic.class.getName());
 
 	private final BasicSignerOptions options;
-    
-    private String signerName = ""; //Common name
-    
-    private String subfilter = "adbe.pkcs7.detached"; //Acroform Signature subfilter
-    
+   
     private boolean autoFixDocument = true;
 
+    private ArrayList fields;
+    
+    private ArrayList attachments;
+    
 	/**
 	 * Constructor with all necessary parameters.
 	 * 
@@ -82,14 +96,6 @@ public class PreparePdfFieldsLogic implements Runnable {
 		options = anOptions;
 	}
     
-    public void setSignerName(String signerName) {
-        this.signerName = signerName;
-    }
-
-    public void setSubfilter(String subfilter) {
-        this.subfilter = subfilter;
-    }
-
     public void setAutofixDocument(boolean autoFix) {
         this.autoFixDocument = autoFix;
     }
@@ -121,6 +127,16 @@ public class PreparePdfFieldsLogic implements Runnable {
 		}
 	}
 
+    public void setFields(ArrayList fields){
+        this.fields = fields;
+    }
+    
+    
+    public void setAttachments(ArrayList attachments){
+        this.attachments = attachments;
+    }
+    
+    
 	/**
 	 * Signs a single file.
 	 * 
@@ -202,33 +218,148 @@ public class PreparePdfFieldsLogic implements Runnable {
                 page = reader.getNumberOfPages();
             }
 
-            float x = options.getPositionLLX(); 
-            float y = options.getPositionLLY();
-            float width = options.getPositionURX(); //Width
-            float height = options.getPositionURY(); //Height
-            options.setL2Text("");//Set empty text
-
-            options.setPositionLLX(x);
-            options.setPositionLLY(reader.getPageSize(page).getHeight() - y - height);
-
-            options.setPositionURX(x + width);
-            options.setPositionURY(reader.getPageSize(page).getHeight() - y);
-
-            Font font = FontFactory.getFont("/usr/share/fonts/truetype/freefont/FreeSans.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 0.8f, Font.NORMAL, Color.BLACK);
-            BaseFont baseFont = font.getBaseFont();
-            PdfFormField personal = PdfFormField.createEmpty(stp.getWriter());
-            personal.setFieldName("personal");
-            TextField name = new TextField(stp.getWriter(), new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(),
-                                                                    options.getPositionURY()), "name");
-            name.setFont(baseFont);
-            name.setText("Meu valor padrão");
-            //name.setOptions(TextField.READ_ONLY); //TextField.MULTILINE
-            PdfFormField personal_name = name.getTextField();
-            personal.addKid(personal_name);                       
-            //TextField password = new TextField(writer, new Rectangle(150, 760, 450, 790), "password");
-            //PdfFormField personal_password = password.getTextField();
-            //personal.addKid(personal_password);
-            stp.addAnnotation(personal, page);
+            for(int i = 0; i < this.fields.size(); i++){
+                
+                HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
+                int x = (Integer) field.get("x");
+                float y = (Integer) field.get("y");
+                float width = (Integer) field.get("width");
+                float height = (Integer) field.get("height");
+                options.setPositionLLX(x);
+                options.setPositionLLY(reader.getPageSize(page).getHeight() - y - height);
+                options.setPositionURX(x + width);
+                options.setPositionURY(reader.getPageSize(page).getHeight() - y);
+                
+                /**
+                 * Check PDF BaseField Options
+                 */
+                int pdfFieldsOptions = 0;
+                if(field.get("option_required") != null && (Boolean) field.get("option_required") == true){
+                    pdfFieldsOptions += BaseField.REQUIRED;
+                }
+                
+                if(field.get("option_multiline") != null && (Boolean) field.get("option_multiline") == true){
+                    pdfFieldsOptions += BaseField.MULTILINE;
+                }
+                
+                if(field.get("option_read_only") != null && (Boolean) field.get("option_read_only") == true){
+                    pdfFieldsOptions += BaseField.READ_ONLY;
+                }
+                
+                if(field.get("option_do_not_scroll") != null && (Boolean) field.get("option_do_not_scroll") == true){
+                    pdfFieldsOptions += BaseField.DO_NOT_SCROLL;
+                }
+                
+                if(field.get("option_password") != null && (Boolean) field.get("option_password") == true){
+                    pdfFieldsOptions += BaseField.PASSWORD;
+                }
+                
+                /**
+                 * Check Border Color
+                 */
+                BaseColor borderColor = BaseColor.BLACK;
+                        
+                if(field.get("border_color") != null){
+                    if(field.get("border_color").equals("WHITE")){
+                        borderColor = BaseColor.WHITE;
+                    }
+                    else if(field.get("border_color").equals("LIGHT_GRAY")){
+                        borderColor = BaseColor.LIGHT_GRAY;
+                    }
+                    else if(field.get("border_color").equals("GRAY")){
+                        borderColor = BaseColor.GRAY;
+                    }
+                    else if(field.get("border_color").equals("DARK_GRAY")){
+                        borderColor = BaseColor.DARK_GRAY;
+                    }
+                    else if(field.get("border_color").equals("BLACK")){
+                        borderColor = BaseColor.BLACK;
+                    }
+                    else if(field.get("border_color").equals("RED")){
+                        borderColor = BaseColor.RED;
+                    }
+                    else if(field.get("border_color").equals("PINK")){
+                        borderColor = BaseColor.PINK;
+                    }
+                    else if(field.get("border_color").equals("ORANGE")){
+                        borderColor = BaseColor.ORANGE;
+                    }
+                    else if(field.get("border_color").equals("YELLOW")){
+                        borderColor = BaseColor.YELLOW;
+                    }
+                    else if(field.get("border_color").equals("GREEN")){
+                        borderColor = BaseColor.GREEN;
+                    }
+                    else if(field.get("border_color").equals("MAGENTA")){
+                        borderColor = BaseColor.MAGENTA;
+                    }
+                    else if(field.get("border_color").equals("CYAN")){
+                        borderColor = BaseColor.CYAN;
+                    }
+                    else if(field.get("border_color").equals("BLUE")){
+                        borderColor = BaseColor.BLUE;
+                    }
+                }
+                
+                /**
+                 * Check Border Color
+                 */
+                int borderStyle = PdfBorderDictionary.STYLE_SOLID;
+                        
+                if(field.get("border_style") != null){
+                    if(field.get("border_style").equals("SOLID")){
+                        borderStyle = PdfBorderDictionary.STYLE_SOLID;
+                    }
+                    else if(field.get("border_style").equals("DASHED")){
+                        borderStyle = PdfBorderDictionary.STYLE_DASHED;
+                    }
+                    else if(field.get("border_style").equals("BEVELED")){
+                        borderStyle = PdfBorderDictionary.STYLE_BEVELED;
+                    }
+                    else if(field.get("border_style").equals("INSET")){
+                        borderStyle = PdfBorderDictionary.STYLE_INSET;
+                    }
+                    else if(field.get("border_style").equals("UNDERLINE")){
+                        borderStyle = PdfBorderDictionary.STYLE_UNDERLINE;
+                    }
+                }
+                
+                if(((String)field.get("type")).equals("text")){
+                    PdfWriter writer = stp.getWriter();
+                    PdfFormField personal = PdfFormField.createEmpty(writer);
+                    personal.setFieldName("form");
+                    TextField pdfField = new TextField(writer, new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String)field.get("name"));
+                    pdfField.setOptions(pdfFieldsOptions);
+                  
+                    //Border?
+                    if(field.get("border_width") != null && (Integer) field.get("border_width") > 0){
+                        pdfField.setBorderColor(borderColor);
+                        pdfField.setBorderStyle(borderStyle);
+                    }
+                    
+                    PdfFormField personal_name = pdfField.getTextField();
+                    personal.addKid(personal_name);
+                    stp.addAnnotation(personal, page);
+                }
+                else if(((String)field.get("type")).equals("image")){
+                    PushbuttonField pdfField = new PushbuttonField(stp.getWriter(), new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String)field.get("name"));
+                    pdfField.setLayout(PushbuttonField.LAYOUT_ICON_ONLY);
+                    pdfField.setProportionalIcon(true);
+                    pdfField.setImage(Image.getInstance((String)field.get("value")));
+                    pdfField.setOptions(pdfFieldsOptions);
+                    
+                    //Border?
+                    if(field.get("border_width") != null && (Integer) field.get("border_width") > 0){
+                        pdfField.setBorderColor(borderColor);
+                        pdfField.setBorderStyle(borderStyle);
+                    }
+                    stp.addAnnotation(pdfField.getField(), page);
+                }
+                else{
+                    throw new Exception("Invalid field type");
+                }
+            }
+            
             stp.close();
             fout.close();
             fout = null;

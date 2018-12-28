@@ -13,31 +13,27 @@ PDF Handler - Preparere pdf fields/attachments before signature
 ``` 
 Request
 {
-    "pdfFile": "/tmp/pdfexemplo.pdf",
+	"pdfFile": "/tmp/pdfexemplo.pdf",
 	"append": true,
 	"autoFixDocument": true,
 	"fields": [{
-        "type": "text or image",
-        "value": "text or filepath",
-        "options": [
-    		"REQUIRED",
-    		"MULTILINE",
-    		"READ_ONLY",
-    		"DO_NOT_SCROLL",
-    		"PASSWORD"
-    	],
-    	"border": {
-    		"color": "WHITE, LIGHT_GRAY, GRAY, DARK_GRAY, BLACK, RED, PINK, ORANGE, YELLOW, GREEN, MAGENTA, CYAN OR BLUE",
-    		"style": "SOLID, DASHED, BEVELED, INSET, UNDERLINE",
-    		"width": "1"
-    	},
-    	"x": "Determines horizontal coordinate",
-        "y": "Determines vertical coordinate",
-        "height": "Determines the field height in pixels",
-        "width": "Determines the field width in pixels",
-        "page": 1
-    }],
-    "attachments": [{
+		"type": "text or image",
+		"value": "text or filepath",
+		"option_required": false,
+		"option_multiline": false,
+		"option_read_only": false,
+		"option_do_not_scroll": false,
+		"option_password": false,
+		"border_color": "WHITE, LIGHT_GRAY, GRAY, DARK_GRAY, BLACK, RED, PINK, ORANGE, YELLOW, GREEN, MAGENTA, CYAN OR BLUE",
+		"border_style": "SOLID, DASHED, BEVELED, INSET, UNDERLINE",
+		"border_width": 1,
+		"x": "Determines horizontal coordinate",
+		"y": "Determines vertical coordinate",
+		"height": "Determines the field height in pixels",
+		"width": "Determines the field width in pixels",
+		"page": 1
+	}],
+	"attachments": [{
 		"file": "/tmp/certificate-attribute.pem"
 	}]
 }

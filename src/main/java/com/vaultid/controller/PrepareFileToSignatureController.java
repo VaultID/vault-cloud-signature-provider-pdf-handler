@@ -4,6 +4,7 @@ import com.vaultid.engine.PreparePdfToSignLogic;
 import com.vaultid.main.Constants;
 import com.vaultid.server.AbstractController;
 import com.vaultid.server.ApiProblem;
+import java.util.ArrayList;
 import java.util.Map;
 import net.sf.jsignpdf.BasicSignerOptions;
 import org.json.JSONObject;
@@ -120,6 +121,11 @@ public class PrepareFileToSignatureController extends AbstractController {
                 signer.setSubfilter((String) data.get("subfilter"));
             }
             signer.setAutofixDocument(autoFixDocument.equals("true")); //Enable update document before sign (if needed)
+            //Validate fields
+            if(data.get("fields") != null){
+                ArrayList fields = (ArrayList) data.get("fields");
+                signer.setFields(fields);
+            }
             signer.signFile();
             
             JSONObject obj = new JSONObject();
