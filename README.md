@@ -34,7 +34,8 @@ Request
 		"page": 1
 	}],
 	"attachments": [{
-		"file": "/tmp/certificate-attribute.pem"
+		"file": "/tmp/certificate-attribute.pem",
+		"description": "My favorite attribute certificate xpto123",
 	}]
 }
 

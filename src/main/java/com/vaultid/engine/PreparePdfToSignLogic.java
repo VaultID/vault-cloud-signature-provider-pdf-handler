@@ -52,18 +52,14 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.AcroFields;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfAnnotation;
 import com.itextpdf.text.pdf.PdfDate;
 import com.itextpdf.text.pdf.PdfDictionary;
-import com.itextpdf.text.pdf.PdfFormField;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignature;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfString;
-import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Set;
@@ -86,7 +82,7 @@ public class PreparePdfToSignLogic implements Runnable {
     private String subfilter = "adbe.pkcs7.detached"; //Acroform Signature subfilter
 
     private boolean autoFixDocument = true;
-    
+
     private ArrayList fields;
 
     /**
@@ -140,8 +136,8 @@ public class PreparePdfToSignLogic implements Runnable {
             return errorMessage;
         }
     }
-    
-    public void setFields(ArrayList fields){
+
+    public void setFields(ArrayList fields) {
         this.fields = fields;
     }
 
@@ -224,15 +220,15 @@ public class PreparePdfToSignLogic implements Runnable {
             for (String fldName : fldNames) {
                 System.out.println(fldName + ": " + acroFields.getField(fldName));
             }
-            
-            for(int i = 0; i < this.fields.size(); i++){
+
+            for (int i = 0; i < this.fields.size(); i++) {
                 HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
-                if(((String)field.get("type")).equals("text")){
+                if (((String) field.get("type")).equals("text")) {
                     //Replace fields form values
                     //acroFields.setField("Caixa de texto 1", "PAULO FILIPE MACEDO DOS SANTOS");
                     //acroFields.setField("Caixa de texto 2", "ARQUITETO DE SOLUÇÕES");
                     //acroFields.setField("Caixa de texto 3", "VAULT ID");
-                    acroFields.setField("form." + (String)field.get("name"), (String)field.get("value"));
+                    acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
                 }
             }
 
