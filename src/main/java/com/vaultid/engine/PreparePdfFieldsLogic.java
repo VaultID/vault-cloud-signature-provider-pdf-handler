@@ -204,11 +204,6 @@ public class PreparePdfFieldsLogic implements Runnable {
                 }
             }
 
-            int page = options.getPage();
-            if (page < 1 || page > reader.getNumberOfPages()) {
-                page = reader.getNumberOfPages();
-            }
-
             if (this.attachments != null) {
                 for (int k = 0; k < this.attachments.size(); k++) {
 
@@ -223,6 +218,12 @@ public class PreparePdfFieldsLogic implements Runnable {
                 for (int i = 0; i < this.fields.size(); i++) {
 
                     HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
+                    
+                    int page = (Integer) field.get("page");
+                    if (page < 1 || page > reader.getNumberOfPages()) {
+                        page = reader.getNumberOfPages();
+                    }
+                    
                     int x = (Integer) field.get("x");
                     float y = (Integer) field.get("y");
                     float width = (Integer) field.get("width");
