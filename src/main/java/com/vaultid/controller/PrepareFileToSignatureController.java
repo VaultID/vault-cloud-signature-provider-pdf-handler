@@ -107,7 +107,7 @@ public class PrepareFileToSignatureController extends AbstractController {
             }
 
             if (data.get("contact") != null) {
-                options.setLocation((String) data.get("contact"));
+                options.setContact((String) data.get("contact"));
             }
 
             final PreparePdfToSignLogic signer = new PreparePdfToSignLogic(options);
