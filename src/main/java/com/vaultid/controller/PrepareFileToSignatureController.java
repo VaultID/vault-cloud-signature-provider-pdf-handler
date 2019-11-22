@@ -119,6 +119,10 @@ public class PrepareFileToSignatureController extends AbstractController {
             if (data.get("subfilter") != null) {
                 signer.setSubfilter((String) data.get("subfilter"));
             }
+            
+            if (data.get("type") != null) {
+                signer.setType((String) data.get("type"));
+            }
             signer.setAutofixDocument(autoFixDocument.equals("true")); //Enable update document before sign (if needed)
             //Validate fields
             if (data.get("fields") != null) {

@@ -80,6 +80,8 @@ public class PreparePdfToSignLogic implements Runnable {
     private String signerName = ""; //Common name
 
     private String subfilter = "adbe.pkcs7.detached"; //Acroform Signature subfilter
+    
+    private String type = "PdfSignature"; //PdfSignature OR PdfTimestampSignature
 
     private boolean autoFixDocument = true;
 
@@ -103,6 +105,10 @@ public class PreparePdfToSignLogic implements Runnable {
 
     public void setSubfilter(String subfilter) {
         this.subfilter = subfilter;
+    }
+    
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void setAutofixDocument(boolean autoFix) {
@@ -332,19 +338,36 @@ public class PreparePdfToSignLogic implements Runnable {
             }
 
             LOGGER.info(RES.get("console.processing"));
-            final PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, new PdfName(this.subfilter));
-            if (!StringUtils.isEmpty(reason)) {
-                dic.setReason(sap.getReason());
+            
+            if(this.type.equals("PdfSignature")){
+                final PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, new PdfName(this.subfilter));
+                if (!StringUtils.isEmpty(reason)) {
+                    dic.setReason(sap.getReason());
+                }
+                if (!StringUtils.isEmpty(location)) {
+                    dic.setLocation(sap.getLocation());
+                }
+                if (!StringUtils.isEmpty(contact)) {
+                    dic.setContact(sap.getContact());
+                }
+                dic.setDate(new PdfDate(sap.getSignDate()));
+                sap.setCryptoDictionary(dic);
             }
-            if (!StringUtils.isEmpty(location)) {
-                dic.setLocation(sap.getLocation());
+            else{
+                final PdfTimestampSignature dic = new PdfTimestampSignature(PdfName.ADOBE_PPKLITE, new PdfName(this.subfilter));
+                if (!StringUtils.isEmpty(reason)) {
+                    dic.setReason(sap.getReason());
+                }
+                if (!StringUtils.isEmpty(location)) {
+                    dic.setLocation(sap.getLocation());
+                }
+                if (!StringUtils.isEmpty(contact)) {
+                    dic.setContact(sap.getContact());
+                }
+                dic.setDate(new PdfDate(sap.getSignDate()));
+                sap.setCryptoDictionary(dic);
             }
-            if (!StringUtils.isEmpty(contact)) {
-                dic.setContact(sap.getContact());
-            }
-            dic.setDate(new PdfDate(sap.getSignDate()));
-            sap.setCryptoDictionary(dic);
-
+            
             final int contentEstimated = (int) (Constants.DEFVAL_SIG_SIZE + 2L);
             final HashMap<PdfName, Integer> exc = new HashMap<PdfName, Integer>();
             exc.put(PdfName.CONTENTS, new Integer(contentEstimated * 2 + 2));

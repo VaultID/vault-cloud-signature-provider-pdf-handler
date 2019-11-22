@@ -56,7 +56,7 @@ PDF Handler - Preparer to signature
 | Headers | Content-Type: application/json |
 
 ``` 
-Request
+Request Sample
 {
 	"pdfFile": "/tmp/pdfexemplo.pdf",
 	"append": true,
@@ -73,6 +73,7 @@ Request
 	"contact": "My contact",
 	"signerName": "PAULO FILIPE MACEDO DOS SANTOS:04660457192",
 	"subfilter": "adbe.pkcs7.detached",
+        "type": "PdfSignature",
 	"fields": [
 		{
 			"name": "myfavoritefield",
@@ -81,6 +82,18 @@ Request
 		}
 	]
 }
+
+Request Sample 2
+{
+	"pdfFile": "/tmp/pdfexemplo.pdf",
+	"append": true,
+	"autoFixDocument": true,
+	"isVisibleSignature": false,
+	"signerName": "ACT - Soluti",
+	"subfilter": "ETSI.RFC3161",
+	"type": "PdfTimestampSignature"
+}
+
 
 Response:
 {
