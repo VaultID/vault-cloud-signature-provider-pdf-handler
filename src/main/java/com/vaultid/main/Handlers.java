@@ -42,9 +42,10 @@ public class Handlers {
                     object.put("status", "success");
                     object.put("detail", "VaultID Handler");
                     String response = object.toString();
-                    he.sendResponseHeaders(200, response.length());
+                    byte[] responseBytes = response.getBytes("UTF-8");
+                    he.sendResponseHeaders(200, responseBytes.length);
                     OutputStream os = he.getResponseBody();
-                    os.write(response.getBytes());
+                    os.write(responseBytes);
                     os.close();
                     return;
                 }
@@ -57,9 +58,10 @@ public class Handlers {
                 object.put("status", 403);
                 object.put("detail", "Access Denied");
                 String response = object.toString();
-                he.sendResponseHeaders(403, response.length());
+                byte[] responseBytes = response.getBytes("UTF-8");
+                he.sendResponseHeaders(403, responseBytes.length);
                 OutputStream os = he.getResponseBody();
-                os.write(response.getBytes());
+                os.write(responseBytes);
                 os.close();
                 return;    
                 }
@@ -153,20 +155,21 @@ public class Handlers {
 
                     //Get Status code by requestMethod
                     String response = controllerReturn.toString();
-                    he.sendResponseHeaders(200, response.length());
+                    byte[] responseBytes = response.getBytes("UTF-8");
+                    he.sendResponseHeaders(200, responseBytes.length);
                     OutputStream os = he.getResponseBody();
-                    os.write(response.getBytes("UTF-8"));
+                    os.write(responseBytes);
                     os.close();
-
                 }
                 //IF String
                 else if (controllerReturn.getClass().equals(String.class)) {
                     JSONObject object = new JSONObject();
                     object.put("status", controllerReturn);
                     String response = object.toString();
-                    he.sendResponseHeaders(200, response.length());
+                    byte[] responseBytes = response.getBytes("UTF-8");
+                    he.sendResponseHeaders(200, responseBytes.length);
                     OutputStream os = he.getResponseBody();
-                    os.write(response.getBytes("UTF-8"));
+                    os.write(responseBytes);
                     os.close();
                 } 
                 //If Api Problem
@@ -182,9 +185,10 @@ public class Handlers {
                     object.put("status", apiProblemStatus);
                     object.put("detail", apiProblemMessage);
                     String response = object.toString();
-                    he.sendResponseHeaders(Integer.parseInt(apiProblemCode), response.length());
+                    byte[] responseBytes = response.getBytes("UTF-8");
+                    he.sendResponseHeaders(Integer.parseInt(apiProblemCode), responseBytes.length);
                     OutputStream os = he.getResponseBody();
-                    os.write(response.getBytes());
+                    os.write(responseBytes);
                     os.close();
                 } else {
                     throw new Exception("Invalid response: " + controllerReturn.getClass());
@@ -198,9 +202,10 @@ public class Handlers {
                 object.put("status", 403);
                 object.put("detail", "Invalid Session");
                 String response = object.toString();
-                he.sendResponseHeaders(403, response.length());
+                byte[] responseBytes = response.getBytes("UTF-8");
+                he.sendResponseHeaders(403, responseBytes.length);
                 OutputStream os = he.getResponseBody();
-                os.write(response.getBytes());
+                os.write(responseBytes);
                 os.close();
                 
                 
@@ -211,9 +216,10 @@ public class Handlers {
                 object.put("status", 404);
                 object.put("detail", "Page not found");
                 String response = object.toString();
-                he.sendResponseHeaders(404, response.length());
+                byte[] responseBytes = response.getBytes("UTF-8");
+                he.sendResponseHeaders(404, responseBytes.length);
                 OutputStream os = he.getResponseBody();
-                os.write(response.getBytes());
+                os.write(responseBytes);
                 os.close();
 
             } catch (JSONException e){
@@ -223,9 +229,10 @@ public class Handlers {
                 object.put("status", 400);
                 object.put("detail", "Invalid JSON format sent");
                 String response = object.toString();
-                he.sendResponseHeaders(400, response.length());
+                byte[] responseBytes = response.getBytes("UTF-8");
+                he.sendResponseHeaders(400, responseBytes.length);
                 OutputStream os = he.getResponseBody();
-                os.write(response.getBytes());
+                os.write(responseBytes);
                 os.close();
             } catch (UnsupportedMediaTypeException e) {
                 JSONObject object = new JSONObject();
@@ -234,9 +241,10 @@ public class Handlers {
                 object.put("status", 415);
                 object.put("detail", "Invalid content-type specified");
                 String response = object.toString();
-                he.sendResponseHeaders(415, response.length());
+                byte[] responseBytes = response.getBytes("UTF-8");
+                he.sendResponseHeaders(415, responseBytes.length);
                 OutputStream os = he.getResponseBody();
-                os.write(response.getBytes());
+                os.write(responseBytes);
                 os.close();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -246,9 +254,10 @@ public class Handlers {
                 object.put("status", 500);
                 object.put("detail", "Internal Server Error");
                 String response = object.toString();
-                he.sendResponseHeaders(500, response.length());
+                byte[] responseBytes = response.getBytes("UTF-8");
+                he.sendResponseHeaders(500, responseBytes.length);
                 OutputStream os = he.getResponseBody();
-                os.write(response.getBytes());
+                os.write(responseBytes);
                 os.close();
             }
         }
