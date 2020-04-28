@@ -60,11 +60,16 @@ import com.itextpdf.text.pdf.PdfSignature;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfString;
+import com.vaultid.main.Base64;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Set;
 import net.sf.jsignpdf.BasicSignerOptions;
 import net.sf.jsignpdf.Constants;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Main logic of signer application. It uses iText to create signature in PDF.
@@ -86,6 +91,8 @@ public class PreparePdfToSignLogic implements Runnable {
     private boolean autoFixDocument = true;
 
     private ArrayList fields;
+    
+    private ArrayList extraInfo;
 
     /**
      * Constructor with all necessary parameters.
@@ -146,6 +153,10 @@ public class PreparePdfToSignLogic implements Runnable {
     public void setFields(ArrayList fields) {
         this.fields = fields;
     }
+    
+    public void setExtraInfo(ArrayList extraInfo) {
+        this.extraInfo = extraInfo;
+    }
 
     /**
      * Signs a single file.
@@ -160,7 +171,7 @@ public class PreparePdfToSignLogic implements Runnable {
         } else {
             LOGGER.info("both input and output files validated");
         }
-
+        
         boolean finished = false;
         Throwable tmpException = null;
         FileOutputStream fout = null;
@@ -168,6 +179,7 @@ public class PreparePdfToSignLogic implements Runnable {
         try {
             LOGGER.info(RES.get("console.createPdfReader", options.getInFile()));
             PdfReader reader;
+            PdfReader.unethicalreading = true;
             try {
                 reader = new PdfReader(options.getInFile(), options.getPdfOwnerPwdStrX().getBytes());
             } catch (Exception e) {
@@ -178,7 +190,7 @@ public class PreparePdfToSignLogic implements Runnable {
                     reader = new PdfReader(options.getInFile());
                 }
             }
-
+            
             LOGGER.info(RES.get("console.createOutPdf", outFile));
             fout = new FileOutputStream(outFile);
 
@@ -207,21 +219,21 @@ public class PreparePdfToSignLogic implements Runnable {
                 LOGGER.info(RES.get("console.updateVersion", new String[]{String.valueOf(reader.getPdfVersion()),
                     String.valueOf(tmpPdfVersion)}));
             }
-
+            
             final PdfStamper stp = PdfStamper.createSignature(reader, fout, tmpPdfVersion, null, options.isAppendX());
-
+            
             final AcroFields acroFields = stp.getAcroFields();
-
-            if (!options.isAppendX()) {
-                // we are not in append mode, let's remove existing signatures
-                // (otherwise we're getting to troubles)
-                @SuppressWarnings("unchecked")
-                final List<String> sigNames = acroFields.getSignatureNames();
-                for (String sigName : sigNames) {
-                    acroFields.removeField(sigName);
-                }
-            }
-
+         
+//            if (!options.isAppendX()) {;;
+//                // we are not in append mode, let's remove existing signatures
+//                // (otherwise we're getting to troubles)
+//                @SuppressWarnings("unchecked")
+//                final List<String> sigNames = acroFields.getSignatureNames();
+//                for (String sigName : sigNames) {
+//                    acroFields.removeField(sigName);
+//                }
+//            }
+            
             Set<String> fldNames = acroFields.getFields().keySet();
             for (String fldName : fldNames) {
                 System.out.println(fldName + ": " + acroFields.getField(fldName));
@@ -235,12 +247,25 @@ public class PreparePdfToSignLogic implements Runnable {
                         //acroFields.setField("Caixa de texto 1", "PAULO FILIPE MACEDO DOS SANTOS");
                         //acroFields.setField("Caixa de texto 2", "ARQUITETO DE SOLUÇÕES");
                         //acroFields.setField("Caixa de texto 3", "VAULT ID");
-                        acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
+                        acroFields.setField((String) field.get("name"), (String) field.get("value"));
+                        //acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
                     }
                 }
             }
+            
 
+            if(this.extraInfo != null){
+                Map<String, String> newInfo;
+                newInfo = new HashMap();
+                for (int i = 0; i < this.extraInfo.size(); i++) {
+                    HashMap<String, Object> field = (HashMap<String, Object>) extraInfo.get(i);
+                    newInfo.put((String) field.get("name"), (String) field.get("value"));
+                }
+                stp.setMoreInfo(newInfo);
+            }
+            
             final PdfSignatureAppearance sap = stp.getSignatureAppearance();
+            
             final String reason = options.getReason();
             if (StringUtils.isNotEmpty(reason)) {
                 LOGGER.info(RES.get("console.setReason", reason));
@@ -331,10 +356,15 @@ public class PreparePdfToSignLogic implements Runnable {
 
                 options.setPositionURX(x + width);
                 options.setPositionURY(reader.getPageSize(page).getHeight() - y);
-
-                sap.setVisibleSignature(
+                
+                if(options.getVisibleSignatureField() != null){
+                    sap.setVisibleSignature(options.getVisibleSignatureField()); //03_Signature Emitente
+                }
+                else{
+                    sap.setVisibleSignature(
                         new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(),
-                                options.getPositionURY()), page, null);
+                                options.getPositionURY()), page, null);    
+                }
             }
 
             LOGGER.info(RES.get("console.processing"));
@@ -372,7 +402,7 @@ public class PreparePdfToSignLogic implements Runnable {
             final HashMap<PdfName, Integer> exc = new HashMap<PdfName, Integer>();
             exc.put(PdfName.CONTENTS, new Integer(contentEstimated * 2 + 2));
             sap.preClose(exc);
-
+            
             Calendar cal = Calendar.getInstance();
 
             byte[] encodedSig = {};

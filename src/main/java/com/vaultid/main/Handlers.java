@@ -11,7 +11,6 @@ import com.vaultid.server.ApiProblem;
 import com.vaultid.server.AbstractHttpHandler;
 import com.vaultid.server.BuiltInHttpServer;
 import com.vaultid.server.UnsupportedMediaTypeException;
-import com.vaultid.server.adapter.exception.InvalidSessionException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Arrays;
@@ -194,21 +193,6 @@ public class Handlers {
                     throw new Exception("Invalid response: " + controllerReturn.getClass());
                 }
 
-            }catch(InvalidSessionException e){
-             
-                JSONObject object = new JSONObject();
-                object.put("type", "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html");
-                object.put("title", "Access Denied");
-                object.put("status", 403);
-                object.put("detail", "Invalid Session");
-                String response = object.toString();
-                byte[] responseBytes = response.getBytes("UTF-8");
-                he.sendResponseHeaders(403, responseBytes.length);
-                OutputStream os = he.getResponseBody();
-                os.write(responseBytes);
-                os.close();
-                
-                
             }catch (ClassNotFoundException e) {
                 JSONObject object = new JSONObject();
                 object.put("type", "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html");

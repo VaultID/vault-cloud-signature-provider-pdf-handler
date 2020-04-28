@@ -140,6 +140,7 @@ public class Constants {
 	public static final String PROPERTY_RIGHT_MOD_CONT = "right.modify.contents";
 
 	public static final String PROPERTY_VISIBLE_ENABLED = "visibleSignature.enabled";
+        public static final String PROPERTY_VISIBLE_SIGNATURE_FIELD = "visibleSignature.field";
 	public static final String PROPERTY_VISIBLE_PAGE = "visibleSignature.page";
 	public static final String PROPERTY_VISIBLE_POS_LLX = "visibleSignature.llx";
 	public static final String PROPERTY_VISIBLE_POS_LLY = "visibleSignature.lly";

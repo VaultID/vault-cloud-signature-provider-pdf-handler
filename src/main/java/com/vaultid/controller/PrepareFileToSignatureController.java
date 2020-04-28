@@ -95,7 +95,11 @@ public class PrepareFileToSignatureController extends AbstractController {
                 options.setPositionURX((Integer) data.get("width"));
                 options.setPositionURY((Integer) data.get("height"));
                 options.setL2Text("");
-
+                
+                if (data.get("visibleSignatureField") != "") {
+                    options.setVisibleSignatureField((String) data.get("visibleSignatureField"));
+                }
+                
             }
 
             if (data.get("reason") != null) {
@@ -129,6 +133,13 @@ public class PrepareFileToSignatureController extends AbstractController {
                 ArrayList fields = (ArrayList) data.get("fields");
                 signer.setFields(fields);
             }
+            
+            //Validate extraInfo
+            if (data.get("extraInfo") != null) {
+                ArrayList extraInfo = (ArrayList) data.get("extraInfo");
+                signer.setExtraInfo(extraInfo);
+            }
+            
             signer.signFile();
 
             JSONObject obj = new JSONObject();

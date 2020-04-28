@@ -87,6 +87,7 @@ public class BasicSignerOptions {
 
 	// options from visible signature settings dialog
 	private boolean visible;
+        private String visibileSignatureField = "";
 	private int page = Constants.DEFVAL_PAGE;
 	private float positionLLX = Constants.DEFVAL_LLX;
 	private float positionLLY = Constants.DEFVAL_LLY;
@@ -161,6 +162,7 @@ public class BasicSignerOptions {
 
 		// visible signature options
 		setVisible(props.getAsBool(Constants.PROPERTY_VISIBLE_ENABLED));
+                setVisibleSignatureField(props.getProperty(Constants.PROPERTY_VISIBLE_SIGNATURE_FIELD));
 		setPage(props.getAsInt(Constants.PROPERTY_VISIBLE_PAGE, Constants.DEFVAL_PAGE));
 		setPositionLLX(props.getAsFloat(Constants.PROPERTY_VISIBLE_POS_LLX, Constants.DEFVAL_LLX));
 		setPositionLLY(props.getAsFloat(Constants.PROPERTY_VISIBLE_POS_LLY, Constants.DEFVAL_LLY));
@@ -664,7 +666,15 @@ public class BasicSignerOptions {
 	public void setVisible(final boolean visible) {
 		this.visible = visible;
 	}
-
+        
+        public String getVisibleSignatureField(){
+            return this.visibileSignatureField;
+        }
+        
+        public void setVisibleSignatureField(String field){
+            this.visibileSignatureField= field;
+        }
+        
 	public int getPage() {
 		return page;
 	}
