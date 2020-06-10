@@ -244,11 +244,11 @@ public class PreparePdfToSignLogic implements Runnable {
                     HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
                     if (((String) field.get("type")).equals("text")) {
                         //Replace fields form values
-                        //acroFields.setField("Caixa de texto 1", "PAULO FILIPE MACEDO DOS SANTOS");
+                        //acroFields.setField("Caixa de texto 1", "PAULO FILIPE MOCEDO DOS SANTOS");
                         //acroFields.setField("Caixa de texto 2", "ARQUITETO DE SOLUÇÕES");
                         //acroFields.setField("Caixa de texto 3", "VAULT ID");
                         acroFields.setField((String) field.get("name"), (String) field.get("value"));
-                        //acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
+                        acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
                     }
                 }
             }

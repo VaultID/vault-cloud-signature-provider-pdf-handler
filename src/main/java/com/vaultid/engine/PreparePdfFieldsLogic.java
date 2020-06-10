@@ -312,9 +312,23 @@ public class PreparePdfFieldsLogic implements Runnable {
                     }
 
                     if (((String) field.get("type")).equals("text")) {
-                        PdfWriter writer = stp.getWriter();
-                        PdfFormField personal = PdfFormField.createEmpty(writer);
-                        personal.setFieldName("form");
+//                        PdfWriter writer = stp.getWriter();;
+//                        PdfFormField personal = PdfFormField.createEmpty(writer);
+//                        personal.setFieldName("form");
+//                        TextField pdfField = new TextField(writer, new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String) field.get("name"));
+//                        pdfField.setOptions(pdfFieldsOptions);
+//
+//                        //Border?
+//                        if (field.get("border_width") != null && (Integer) field.get("border_width") > 0) {
+//                            pdfField.setBorderColor(borderColor);
+//                            pdfField.setBorderStyle(borderStyle);
+//                        }
+//
+//                        PdfFormField personal_name = pdfField.getTextField();
+//                        personal.addKid(personal_name);
+//                        stp.addAnnotation(personal, page);
+
+                        PdfWriter writer = stp.getWriter();;
                         TextField pdfField = new TextField(writer, new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String) field.get("name"));
                         pdfField.setOptions(pdfFieldsOptions);
 
@@ -325,8 +339,8 @@ public class PreparePdfFieldsLogic implements Runnable {
                         }
 
                         PdfFormField personal_name = pdfField.getTextField();
-                        personal.addKid(personal_name);
-                        stp.addAnnotation(personal, page);
+                        stp.addAnnotation(personal_name, page);
+                        
                     } else if (((String) field.get("type")).equals("image")) {
                         PushbuttonField pdfField = new PushbuttonField(stp.getWriter(), new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String) field.get("name"));
                         pdfField.setLayout(PushbuttonField.LAYOUT_ICON_ONLY);
