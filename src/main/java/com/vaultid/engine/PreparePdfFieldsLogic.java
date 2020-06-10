@@ -149,6 +149,7 @@ public class PreparePdfFieldsLogic implements Runnable {
         String error = "";
         try {
             LOGGER.info(RES.get("console.createPdfReader", options.getInFile()));
+            PdfReader.unethicalreading = true;
             PdfReader reader;
             try {
                 reader = new PdfReader(options.getInFile(), options.getPdfOwnerPwdStrX().getBytes());

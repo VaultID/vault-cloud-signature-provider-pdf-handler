@@ -54,6 +54,7 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfDate;
 import com.itextpdf.text.pdf.PdfDictionary;
+import com.itextpdf.text.pdf.PdfFormField;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignature;
@@ -178,8 +179,8 @@ public class PreparePdfToSignLogic implements Runnable {
         String error = "";
         try {
             LOGGER.info(RES.get("console.createPdfReader", options.getInFile()));
-            PdfReader reader;
             PdfReader.unethicalreading = true;
+            PdfReader reader;
             try {
                 reader = new PdfReader(options.getInFile(), options.getPdfOwnerPwdStrX().getBytes());
             } catch (Exception e) {
@@ -249,6 +250,14 @@ public class PreparePdfToSignLogic implements Runnable {
                         //acroFields.setField("Caixa de texto 3", "VAULT ID");
                         acroFields.setField((String) field.get("name"), (String) field.get("value"));
                         acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
+                        
+                        try {
+                            if (((String) field.get("readonly")).equals("true")) {
+                                acroFields.setFieldProperty((String) field.get("name"), "setfflags", PdfFormField.FF_READ_ONLY, null);
+                            }
+                        } catch( NullPointerException e ) {
+                            // Parâmetro "readonly" não informado
+                        }
                     }
                 }
             }
