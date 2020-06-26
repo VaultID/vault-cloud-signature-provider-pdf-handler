@@ -78,7 +78,8 @@ Request Sample
 		{
 			"name": "myfavoritefield",
 			"type": "text",
-			"value": "I accept this document!"
+			"value": "I accept this document!",
+			"readonly": "true"
 		}
 	]
 }
