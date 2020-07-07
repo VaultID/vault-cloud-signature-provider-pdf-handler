@@ -87,6 +87,8 @@ public class PreparePdfToSignLogic implements Runnable {
 
     private String subfilter = "adbe.pkcs7.detached"; //Acroform Signature subfilter
     
+    private PdfName filter = PdfName.ADOBE_PPKLITE;
+
     private String type = "PdfSignature"; //PdfSignature OR PdfTimestampSignature
 
     private boolean autoFixDocument = true;
@@ -158,7 +160,15 @@ public class PreparePdfToSignLogic implements Runnable {
     public void setExtraInfo(ArrayList extraInfo) {
         this.extraInfo = extraInfo;
     }
+    
+    public void setFilter(PdfName filter) {
+        this.filter = filter;
+    }
 
+    public PdfName getFilter() {
+        return filter;
+    }
+    
     /**
      * Signs a single file.
      *
@@ -380,7 +390,7 @@ public class PreparePdfToSignLogic implements Runnable {
             LOGGER.info(RES.get("console.processing"));
             
             if(this.type.equals("PdfSignature")){
-                final PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, new PdfName(this.subfilter));
+                final PdfSignature dic = new PdfSignature(this.filter, new PdfName(this.subfilter));
                 if (!StringUtils.isEmpty(reason)) {
                     dic.setReason(sap.getReason());
                 }
@@ -394,7 +404,7 @@ public class PreparePdfToSignLogic implements Runnable {
                 sap.setCryptoDictionary(dic);
             }
             else{
-                final PdfTimestampSignature dic = new PdfTimestampSignature(PdfName.ADOBE_PPKLITE, new PdfName(this.subfilter));
+                final PdfTimestampSignature dic = new PdfTimestampSignature(this.filter, new PdfName(this.subfilter));
                 if (!StringUtils.isEmpty(reason)) {
                     dic.setReason(sap.getReason());
                 }
