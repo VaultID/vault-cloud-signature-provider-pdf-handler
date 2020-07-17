@@ -61,6 +61,7 @@ import com.itextpdf.text.pdf.PdfSignature;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PushbuttonField;
 import com.vaultid.main.Base64;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -269,6 +270,12 @@ public class PreparePdfToSignLogic implements Runnable {
                         } catch( NullPointerException e ) {
                             // Parâmetro "readonly" não informado
                         }
+                    } else if (((String) field.get("type")).equals("image")) {
+                        PushbuttonField ad = acroFields.getNewPushbuttonFromField((String) field.get("name"));
+                        ad.setLayout(PushbuttonField.LAYOUT_ICON_ONLY);
+                        ad.setProportionalIcon(true);
+                        ad.setImage(Image.getInstance((String) field.get("value")));
+                        acroFields.replacePushbuttonField((String) field.get("name"), ad.getField());
                     }
                 }
             }
