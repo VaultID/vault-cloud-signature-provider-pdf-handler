@@ -61,6 +61,7 @@ import com.itextpdf.text.pdf.PdfSignature;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PushbuttonField;
 import com.vaultid.main.Base64;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -87,6 +88,8 @@ public class PreparePdfToSignLogic implements Runnable {
 
     private String subfilter = "adbe.pkcs7.detached"; //Acroform Signature subfilter
     
+    private PdfName filter = PdfName.ADOBE_PPKLITE;
+
     private String type = "PdfSignature"; //PdfSignature OR PdfTimestampSignature
 
     private boolean autoFixDocument = true;
@@ -158,7 +161,15 @@ public class PreparePdfToSignLogic implements Runnable {
     public void setExtraInfo(ArrayList extraInfo) {
         this.extraInfo = extraInfo;
     }
+    
+    public void setFilter(PdfName filter) {
+        this.filter = filter;
+    }
 
+    public PdfName getFilter() {
+        return filter;
+    }
+    
     /**
      * Signs a single file.
      *
@@ -244,6 +255,7 @@ public class PreparePdfToSignLogic implements Runnable {
                 for (int i = 0; i < this.fields.size(); i++) {
                     HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
                     if (((String) field.get("type")).equals("text")) {
+
                         //Replace fields form values
                         //acroFields.setField("Caixa de texto 1", "PAULO FILIPE MOCEDO DOS SANTOS");
                         //acroFields.setField("Caixa de texto 2", "ARQUITETO DE SOLUÇÕES");
@@ -258,6 +270,12 @@ public class PreparePdfToSignLogic implements Runnable {
                         } catch( NullPointerException e ) {
                             // Parâmetro "readonly" não informado
                         }
+                    } else if (((String) field.get("type")).equals("image")) {
+                        PushbuttonField ad = acroFields.getNewPushbuttonFromField((String) field.get("name"));
+                        ad.setLayout(PushbuttonField.LAYOUT_ICON_ONLY);
+                        ad.setProportionalIcon(true);
+                        ad.setImage(Image.getInstance((String) field.get("value")));
+                        acroFields.replacePushbuttonField((String) field.get("name"), ad.getField());
                     }
                 }
             }
@@ -379,7 +397,7 @@ public class PreparePdfToSignLogic implements Runnable {
             LOGGER.info(RES.get("console.processing"));
             
             if(this.type.equals("PdfSignature")){
-                final PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, new PdfName(this.subfilter));
+                final PdfSignature dic = new PdfSignature(this.filter, new PdfName(this.subfilter));
                 if (!StringUtils.isEmpty(reason)) {
                     dic.setReason(sap.getReason());
                 }
@@ -393,7 +411,7 @@ public class PreparePdfToSignLogic implements Runnable {
                 sap.setCryptoDictionary(dic);
             }
             else{
-                final PdfTimestampSignature dic = new PdfTimestampSignature(PdfName.ADOBE_PPKLITE, new PdfName(this.subfilter));
+                final PdfTimestampSignature dic = new PdfTimestampSignature(this.filter, new PdfName(this.subfilter));
                 if (!StringUtils.isEmpty(reason)) {
                     dic.setReason(sap.getReason());
                 }

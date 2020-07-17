@@ -1,5 +1,6 @@
 package com.vaultid.controller;
 
+import com.itextpdf.text.pdf.PdfName;
 import com.vaultid.engine.PreparePdfToSignLogic;
 import com.vaultid.main.Constants;
 import com.vaultid.server.AbstractController;
@@ -122,6 +123,13 @@ public class PrepareFileToSignatureController extends AbstractController {
 
             if (data.get("subfilter") != null) {
                 signer.setSubfilter((String) data.get("subfilter"));
+            }
+            
+            if (data.get("filter") != null) {
+                String filter = (String) data.get("filter");
+                if( filter.equalsIgnoreCase("PBAD.PAdES") ) {
+                    signer.setFilter( new PdfName("PBAD_PAdES") );
+                }
             }
             
             if (data.get("type") != null) {
