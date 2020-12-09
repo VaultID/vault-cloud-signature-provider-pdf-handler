@@ -6,8 +6,10 @@ import com.vaultid.main.Constants;
 import com.vaultid.server.AbstractController;
 import com.vaultid.server.ApiProblem;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import net.sf.jsignpdf.BasicSignerOptions;
+import net.sf.jsignpdf.SecundarySignerOptions;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
@@ -101,6 +103,22 @@ public class PrepareFileToSignatureController extends AbstractController {
                     options.setVisibleSignatureField((String) data.get("visibleSignatureField"));
                 }
                 
+            }
+            
+            //Set secundary visible signature
+            if (data.get("visibleSignatureSecundaryFields") != null) {
+                ArrayList secundarySignatures = (ArrayList) data.get("visibleSignatureSecundaryFields");
+                for (int i = 0; i < secundarySignatures.size(); i++) {
+                    HashMap<String, Object> field = (HashMap<String, Object>) secundarySignatures.get(i);                
+                    SecundarySignerOptions option = new SecundarySignerOptions();
+                    option.setBgImgPath((String) field.get("img"));
+                    option.setPage((Integer) field.get("page"));
+                    option.setPositionLLX((Integer) field.get("x"));
+                    option.setPositionLLY((Integer) field.get("y"));
+                    option.setPositionURX((Integer) field.get("width"));
+                    option.setPositionURY((Integer) field.get("height"));
+                    options.addSecundarySignature(option);
+                }
             }
 
             if (data.get("reason") != null) {

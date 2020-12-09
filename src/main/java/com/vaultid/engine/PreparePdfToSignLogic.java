@@ -59,8 +59,11 @@ import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignature;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfSignatureAppearanceSecundary;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PushbuttonField;
 import com.vaultid.main.Base64;
 import java.io.ByteArrayOutputStream;
@@ -71,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import net.sf.jsignpdf.BasicSignerOptions;
 import net.sf.jsignpdf.Constants;
+import net.sf.jsignpdf.SecundarySignerOptions;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -292,6 +296,8 @@ public class PreparePdfToSignLogic implements Runnable {
             }
             
             final PdfSignatureAppearance sap = stp.getSignatureAppearance();
+            LOGGER.info("PdfSignatureAppearanceSecundary");
+            final PdfSignatureAppearanceSecundary sap2 = new PdfSignatureAppearanceSecundary();
             
             final String reason = options.getReason();
             if (StringUtils.isNotEmpty(reason)) {
@@ -428,7 +434,25 @@ public class PreparePdfToSignLogic implements Runnable {
             final int contentEstimated = (int) (Constants.DEFVAL_SIG_SIZE + 2L);
             final HashMap<PdfName, Integer> exc = new HashMap<PdfName, Integer>();
             exc.put(PdfName.CONTENTS, new Integer(contentEstimated * 2 + 2));
-            sap.preClose(exc);
+            
+            for(SecundarySignerOptions secundarySignatureOption: options.getSecundarySignatures()){
+                float x = secundarySignatureOption.getPositionLLX();
+                float y = secundarySignatureOption.getPositionLLY();
+                float width = secundarySignatureOption.getPositionURX(); //Width
+                float height = secundarySignatureOption.getPositionURY(); //Height
+
+                secundarySignatureOption.setPositionLLX(x);
+                secundarySignatureOption.setPositionLLY(reader.getPageSize(secundarySignatureOption.getPage()).getHeight() - y - height);
+
+                secundarySignatureOption.setPositionURX(x + width);
+                secundarySignatureOption.setPositionURY(reader.getPageSize(secundarySignatureOption.getPage()).getHeight() - y);
+            }
+            
+            LOGGER.info("setSecundarySignatureOptions");
+            sap2.setSecundarySignatureOptions(options.getSecundarySignatures());
+            sap2.setAppearance(sap.getAppearance());
+
+            sap.preClose(exc, sap2);
             
             Calendar cal = Calendar.getInstance();
 

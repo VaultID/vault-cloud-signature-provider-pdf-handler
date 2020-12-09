@@ -31,6 +31,8 @@ package net.sf.jsignpdf;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 import net.sf.jsignpdf.types.CertificationLevel;
@@ -100,6 +102,7 @@ public class BasicSignerOptions {
 	private String imgPath;
 	private String bgImgPath;
 	private boolean acro6Layers = Constants.DEFVAL_ACRO6LAYERS;
+        private ArrayList<SecundarySignerOptions> secundarySignatures = new ArrayList<SecundarySignerOptions>();
 
 	// options for timestamps (provided by external TSA)
 	private boolean timestamp;
@@ -1118,4 +1121,12 @@ public class BasicSignerOptions {
 		}
 		return tmpResult;
 	}
+        
+        public void addSecundarySignature(SecundarySignerOptions secundarySignatureOption){
+            this.secundarySignatures.add(secundarySignatureOption);
+        }
+        
+        public ArrayList<SecundarySignerOptions> getSecundarySignatures(){
+            return this.secundarySignatures;
+        }
 }
