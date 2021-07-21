@@ -385,10 +385,10 @@ public class PreparePdfToSignLogic implements Runnable {
                 options.setL2Text("");//Set empty text
 
                 options.setPositionLLX(x);
-                options.setPositionLLY(reader.getPageSize(page).getHeight() - y - height);
+                options.setPositionLLY(reader.getPageSizeWithRotation(page).getHeight() - y - height);
 
                 options.setPositionURX(x + width);
-                options.setPositionURY(reader.getPageSize(page).getHeight() - y);
+                options.setPositionURY(reader.getPageSizeWithRotation(page).getHeight() - y);
                 
                 if(options.getVisibleSignatureField() != null){
                     sap.setVisibleSignature(options.getVisibleSignatureField()); //03_Signature Emitente
@@ -442,10 +442,10 @@ public class PreparePdfToSignLogic implements Runnable {
                 float height = secundarySignatureOption.getPositionURY(); //Height
 
                 secundarySignatureOption.setPositionLLX(x);
-                secundarySignatureOption.setPositionLLY(reader.getPageSize(secundarySignatureOption.getPage()).getHeight() - y - height);
+                secundarySignatureOption.setPositionLLY(reader.getPageSizeWithRotation(secundarySignatureOption.getPage()).getHeight() - y - height);
 
                 secundarySignatureOption.setPositionURX(x + width);
-                secundarySignatureOption.setPositionURY(reader.getPageSize(secundarySignatureOption.getPage()).getHeight() - y);
+                secundarySignatureOption.setPositionURY(reader.getPageSizeWithRotation(secundarySignatureOption.getPage()).getHeight() - y);
             }
             
             LOGGER.info("setSecundarySignatureOptions");
