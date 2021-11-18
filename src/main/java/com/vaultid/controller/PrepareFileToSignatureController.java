@@ -166,12 +166,21 @@ public class PrepareFileToSignatureController extends AbstractController {
                 signer.setExtraInfo(extraInfo);
             }
             
-            signer.signFile();
-
+            PreparePdfToSignLogic.Status status = signer.signFile();
             JSONObject obj = new JSONObject();
-            obj.put("status", Constants.OK);
-            obj.put("message", "File prepareted!!!!");
-            obj.put("file", outFileName);
+            
+//            if (status.isSuccess()) {
+
+                obj.put("status", Constants.OK);
+                obj.put("message", "File prepareted!!!!");
+                obj.put("file", outFileName);
+
+//            } else {
+//                
+//                obj.put("status", Constants.ERROR);
+//                obj.put("message", status.getErrorMessage());
+//                obj.put("file", outFileName);
+//            }
 
             return obj;
 

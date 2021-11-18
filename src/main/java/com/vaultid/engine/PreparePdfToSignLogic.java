@@ -55,6 +55,7 @@ import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfDate;
 import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfIndirectReference;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignature;
@@ -65,6 +66,7 @@ import com.itextpdf.text.pdf.PdfString;
 import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PushbuttonField;
+import com.itextpdf.text.pdf.TextField;
 import com.vaultid.main.Base64;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -258,14 +260,17 @@ public class PreparePdfToSignLogic implements Runnable {
             if(this.fields != null){
                 for (int i = 0; i < this.fields.size(); i++) {
                     HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
-                    if (((String) field.get("type")).equals("text")) {
+                    if (((String) field.get("type")).equals("text") || ((String) field.get("type")).equals("static_text")) {
 
                         //Replace fields form values
-                        //acroFields.setField("Caixa de texto 1", "PAULO FILIPE MOCEDO DOS SANTOS");
-                        //acroFields.setField("Caixa de texto 2", "ARQUITETO DE SOLUÇÕES");
-                        //acroFields.setField("Caixa de texto 3", "VAULT ID");
+
                         acroFields.setField((String) field.get("name"), (String) field.get("value"));
                         acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
+                       
+//                       TextField txf = acroFields.getFieldCache().getOrDefault((String) field.get("name"), null);
+//                        
+//                        txf.setRotation(90);
+//                        acroFields.regenerateField((String) field.get("name"));
                         
                         try {
                             if (((String) field.get("readonly")).equals("true")) {
@@ -467,6 +472,7 @@ public class PreparePdfToSignLogic implements Runnable {
             System.arraycopy(encodedSig, 0, paddedSig, 0, encodedSig.length);
 
             PdfDictionary dic2 = new PdfDictionary();
+            
             dic2.put(PdfName.CONTENTS, new PdfString(paddedSig).setHexWriting(true));
             LOGGER.info(RES.get("console.closeStream"));
             sap.close(dic2);
