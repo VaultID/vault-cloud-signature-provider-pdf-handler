@@ -184,28 +184,32 @@ public class PreparePdfFieldsLogic implements Runnable {
             final HashAlgorithm hashAlgorithm = options.getHashAlgorithmX();
 
             LOGGER.info(RES.get("console.createSignature"));
-            char tmpPdfVersion = '\0'; // default version - the same as input
-            if (reader.getPdfVersion() < hashAlgorithm.getPdfVersion()) {
+            char tmpPdfVersion = '\0'; // default version - the same as input,
+            
+            /**
+             *It's validating in PHP. Because not found library that return correct pdf version
+            */
+            // if (reader.getPdfVersion() < hashAlgorithm.getPdfVersion()) {
 
-                //Autofix, old version? version should be updated
-                if (this.autoFixDocument) {
-                    options.setAppend(true);
-                }
+            //     //Autofix, old version? version should be updated
+            //     if (this.autoFixDocument) {
+            //         options.setAppend(true);
+            //     }
 
-                // this covers also problems with visible signatures (embedded
-                // fonts) in PDF 1.2, because the minimal version
-                // for hash algorithms is 1.3 (for SHA1)
-                if (options.isAppendX()) {
-                    // if we are in append mode and version should be updated
-                    // then return false (not possible)
-                    error = RES.get("console.updateVersionNotPossibleInAppendMode");
-                    LOGGER.severe(error);
-                    return new Status(false, error);
-                }
-                tmpPdfVersion = hashAlgorithm.getPdfVersion();
-                LOGGER.info(RES.get("console.updateVersion", new String[]{String.valueOf(reader.getPdfVersion()),
-                    String.valueOf(tmpPdfVersion)}));
-            }
+            //     // this covers also problems with visible signatures (embedded
+            //     // fonts) in PDF 1.2, because the minimal version
+            //     // for hash algorithms is 1.3 (for SHA1)
+            //     if (options.isAppendX()) {
+            //         // if we are in append mode and version should be updated
+            //         // then return false (not possible)
+            //         error = RES.get("console.updateVersionNotPossibleInAppendMode");
+            //         LOGGER.severe(error);
+            //         return new Status(false, error);
+            //     }
+            //     tmpPdfVersion = hashAlgorithm.getPdfVersion();
+            //     LOGGER.info(RES.get("console.updateVersion", new String[]{String.valueOf(reader.getPdfVersion()),
+            //         String.valueOf(tmpPdfVersion)}));
+            // }
 
             //final PdfStamper stp = new PdfStamper(reader, fout);
             final PdfStamper stp = new PdfStamper(reader, fout, tmpPdfVersion, options.isAppendX());
