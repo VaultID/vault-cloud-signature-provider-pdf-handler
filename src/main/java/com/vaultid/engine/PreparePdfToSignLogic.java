@@ -189,6 +189,9 @@ public class PreparePdfToSignLogic implements Runnable {
         FileOutputStream fout = null;
         String error = "";
         try {
+            
+            
+            
             LOGGER.info(RES.get("console.createPdfReader", options.getInFile()));
             PdfReader.unethicalreading = true;
             PdfReader reader;
@@ -201,7 +204,7 @@ public class PreparePdfToSignLogic implements Runnable {
                     // try to read without password
                     reader = new PdfReader(options.getInFile());
                 }
-            }
+            }                
             
             LOGGER.info(RES.get("console.createOutPdf", outFile));
             fout = new FileOutputStream(outFile);
@@ -291,6 +294,9 @@ public class PreparePdfToSignLogic implements Runnable {
                 stp.setMoreInfo(newInfo);
             }
             
+            
+            
+            
             final PdfSignatureAppearance sap = stp.getSignatureAppearance();
             
             final String reason = options.getReason();
@@ -367,7 +373,13 @@ public class PreparePdfToSignLogic implements Runnable {
                 LOGGER.info(RES.get("console.setRender"));
                 //sap.setRenderingMode(PdfSignatureAppearance.RenderingMode.DESCRIPTION);
                 LOGGER.info(RES.get("console.setVisibleSignature"));
+                
                 int page = options.getPage();
+                
+                if(page == -100){
+                   sap.setSignAllPages(true);
+                }
+             
                 if (page < 1 || page > reader.getNumberOfPages()) {
                     page = reader.getNumberOfPages();
                 }
@@ -388,9 +400,10 @@ public class PreparePdfToSignLogic implements Runnable {
                     sap.setVisibleSignature(options.getVisibleSignatureField()); //03_Signature Emitente
                 }
                 else{
+                    
                     sap.setVisibleSignature(
                         new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(),
-                                options.getPositionURY()), page, null);    
+                                options.getPositionURY()), page, null);  
                 }
             }
 
@@ -449,6 +462,7 @@ public class PreparePdfToSignLogic implements Runnable {
             fout.close();
             fout = null;
             finished = true;
+       
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, RES.get("console.exception"), e);
             error = e.getMessage();
