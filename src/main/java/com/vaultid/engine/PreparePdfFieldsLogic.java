@@ -30,6 +30,8 @@
 package com.vaultid.engine;
 
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
 import static net.sf.jsignpdf.Constants.RES;
 
 import java.io.File;
@@ -42,17 +44,31 @@ import net.sf.jsignpdf.types.HashAlgorithm;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.BaseField;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfAnnotation;
+import com.itextpdf.text.pdf.PdfAppearance;
+import com.itextpdf.text.pdf.PdfArray;
 import com.itextpdf.text.pdf.PdfBorderDictionary;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfFileSpecification;
 import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPage;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PushbuttonField;
 import com.itextpdf.text.pdf.TextField;
+import com.sun.java.swing.plaf.gtk.GTKConstants;
 import java.util.ArrayList;
 import java.lang.Integer;
 import java.nio.file.Files;
@@ -168,28 +184,32 @@ public class PreparePdfFieldsLogic implements Runnable {
             final HashAlgorithm hashAlgorithm = options.getHashAlgorithmX();
 
             LOGGER.info(RES.get("console.createSignature"));
-            char tmpPdfVersion = '\0'; // default version - the same as input
-            if (reader.getPdfVersion() < hashAlgorithm.getPdfVersion()) {
+            char tmpPdfVersion = '\0'; // default version - the same as input,
+            
+            /**
+             *It's validating in PHP. Because not found library that return correct pdf version
+            */
+            // if (reader.getPdfVersion() < hashAlgorithm.getPdfVersion()) {
 
-                //Autofix, old version? version should be updated
-                if (this.autoFixDocument) {
-                    options.setAppend(true);
-                }
+            //     //Autofix, old version? version should be updated
+            //     if (this.autoFixDocument) {
+            //         options.setAppend(true);
+            //     }
 
-                // this covers also problems with visible signatures (embedded
-                // fonts) in PDF 1.2, because the minimal version
-                // for hash algorithms is 1.3 (for SHA1)
-                if (options.isAppendX()) {
-                    // if we are in append mode and version should be updated
-                    // then return false (not possible)
-                    error = RES.get("console.updateVersionNotPossibleInAppendMode");
-                    LOGGER.severe(error);
-                    return new Status(false, error);
-                }
-                tmpPdfVersion = hashAlgorithm.getPdfVersion();
-                LOGGER.info(RES.get("console.updateVersion", new String[]{String.valueOf(reader.getPdfVersion()),
-                    String.valueOf(tmpPdfVersion)}));
-            }
+            //     // this covers also problems with visible signatures (embedded
+            //     // fonts) in PDF 1.2, because the minimal version
+            //     // for hash algorithms is 1.3 (for SHA1)
+            //     if (options.isAppendX()) {
+            //         // if we are in append mode and version should be updated
+            //         // then return false (not possible)
+            //         error = RES.get("console.updateVersionNotPossibleInAppendMode");
+            //         LOGGER.severe(error);
+            //         return new Status(false, error);
+            //     }
+            //     tmpPdfVersion = hashAlgorithm.getPdfVersion();
+            //     LOGGER.info(RES.get("console.updateVersion", new String[]{String.valueOf(reader.getPdfVersion()),
+            //         String.valueOf(tmpPdfVersion)}));
+            // }
 
             //final PdfStamper stp = new PdfStamper(reader, fout);
             final PdfStamper stp = new PdfStamper(reader, fout, tmpPdfVersion, options.isAppendX());
@@ -219,20 +239,21 @@ public class PreparePdfFieldsLogic implements Runnable {
                 for (int i = 0; i < this.fields.size(); i++) {
 
                     HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
-                    
+
                     int page = (Integer) field.get("page");
                     if (page < 1 || page > reader.getNumberOfPages()) {
                         page = reader.getNumberOfPages();
                     }
-                    
+
                     int x = (Integer) field.get("x");
                     float y = (Integer) field.get("y");
                     float width = (Integer) field.get("width");
                     float height = (Integer) field.get("height");
                     options.setPositionLLX(x);
-                    options.setPositionLLY(reader.getPageSize(page).getHeight() - y - height);
+                    options.setPositionLLY(reader.getPageSizeWithRotation(page).getHeight() - y - height);
                     options.setPositionURX(x + width);
-                    options.setPositionURY(reader.getPageSize(page).getHeight() - y);
+                    options.setPositionURY(reader.getPageSizeWithRotation(page).getHeight() - y);
+
 
                     /**
                      * Check PDF BaseField Options
@@ -311,26 +332,35 @@ public class PreparePdfFieldsLogic implements Runnable {
                             borderStyle = PdfBorderDictionary.STYLE_UNDERLINE;
                         }
                     }
+                    
+                    if (((String) field.get("type")).equals("static_text")) {
+                        
+                        int rotation = field.get("rotation") != null? (Integer) field.get("rotation"): 0;
+                        
+                        stp.setRotateContents(true);
+                        PdfContentByte canvas = stp.getOverContent(page);
+                        ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, new Phrase((String) field.get("value")),x , y, rotation);
 
-                    if (((String) field.get("type")).equals("text")) {
-//                        PdfWriter writer = stp.getWriter();;
-//                        PdfFormField personal = PdfFormField.createEmpty(writer);
-//                        personal.setFieldName("form");
-//                        TextField pdfField = new TextField(writer, new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String) field.get("name"));
-//                        pdfField.setOptions(pdfFieldsOptions);
-//
-//                        //Border?
-//                        if (field.get("border_width") != null && (Integer) field.get("border_width") > 0) {
-//                            pdfField.setBorderColor(borderColor);
-//                            pdfField.setBorderStyle(borderStyle);
-//                        }
-//
-//                        PdfFormField personal_name = pdfField.getTextField();
-//                        personal.addKid(personal_name);
-//                        stp.addAnnotation(personal, page);
+                    }else if (((String) field.get("type")).equals("text")) {
 
-                        PdfWriter writer = stp.getWriter();;
-                        TextField pdfField = new TextField(writer, new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String) field.get("name"));
+                        Rectangle rec = new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY());
+                        
+                        rec.setRotation(0);
+                        PdfWriter writer = stp.getWriter();
+                        
+
+                        TextField pdfField = new TextField(writer, rec, (String) field.get("name"));
+//                        TextField pdfField = new TextField(writer, new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY(),90), (String) field.get("name"));
+//                        TextField pdfField = new TextField(writer, new Rectangle(llx, lly, urx, ury), (String) field.get("name"));
+
+
+
+                        //pdfField.getAppearance().drawTextField(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY());
+                        //pdfField.setRotation(0);
+                        //pdfField.setRotationFromPage(reader.getPageSizeWithRotation(page));
+                        //pdfField.getTextField().setRotate(0);
+
+
                         pdfField.setOptions(pdfFieldsOptions);
 
                         //Border?
@@ -338,10 +368,15 @@ public class PreparePdfFieldsLogic implements Runnable {
                             pdfField.setBorderColor(borderColor);
                             pdfField.setBorderStyle(borderStyle);
                         }
+                        
 
                         PdfFormField personal_name = pdfField.getTextField();
+
+
                         stp.addAnnotation(personal_name, page);
-                        
+
+                       
+
                     } else if (((String) field.get("type")).equals("image")) {
                         PushbuttonField pdfField = new PushbuttonField(stp.getWriter(), new Rectangle(options.getPositionLLX(), options.getPositionLLY(), options.getPositionURX(), options.getPositionURY()), (String) field.get("name"));
                         pdfField.setLayout(PushbuttonField.LAYOUT_ICON_ONLY);

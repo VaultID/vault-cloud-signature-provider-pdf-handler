@@ -55,13 +55,18 @@ import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfDate;
 import com.itextpdf.text.pdf.PdfDictionary;
 import com.itextpdf.text.pdf.PdfFormField;
+import com.itextpdf.text.pdf.PdfIndirectReference;
 import com.itextpdf.text.pdf.PdfName;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfSignature;
 import com.itextpdf.text.pdf.PdfSignatureAppearance;
+import com.itextpdf.text.pdf.PdfSignatureAppearanceSecundary;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.PdfString;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PushbuttonField;
+import com.itextpdf.text.pdf.TextField;
 import com.vaultid.main.Base64;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -71,6 +76,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import net.sf.jsignpdf.BasicSignerOptions;
 import net.sf.jsignpdf.Constants;
+import net.sf.jsignpdf.SecundarySignerOptions;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -213,27 +219,31 @@ public class PreparePdfToSignLogic implements Runnable {
 
             LOGGER.info(RES.get("console.createSignature"));
             char tmpPdfVersion = '\0'; // default version - the same as input
-            if (reader.getPdfVersion() < hashAlgorithm.getPdfVersion()) {
+            
+            /**
+             *It's validating in PHP. Because not found library that return correct pdf version
+            */
+            // if (reader.getPdfVersion() < hashAlgorithm.getPdfVersion()) {
 
-                //Autofix, old version? version should be updated
-                if (this.autoFixDocument) {
-                    options.setAppend(true);
-                }
+            //     //Autofix, old version? version should be updated
+            //     if (this.autoFixDocument) {
+            //         options.setAppend(true);
+            //     }
 
-                // this covers also problems with visible signatures (embedded
-                // fonts) in PDF 1.2, because the minimal version
-                // for hash algorithms is 1.3 (for SHA1)
-                if (options.isAppendX()) {
-                    // if we are in append mode and version should be updated
-                    // then return false (not possible)
-                    error = RES.get("console.updateVersionNotPossibleInAppendMode");
-                    LOGGER.severe(error);
-                    return new Status(false, error);
-                }
-                tmpPdfVersion = hashAlgorithm.getPdfVersion();
-                LOGGER.info(RES.get("console.updateVersion", new String[]{String.valueOf(reader.getPdfVersion()),
-                    String.valueOf(tmpPdfVersion)}));
-            }
+            //     // this covers also problems with visible signatures (embedded
+            //     // fonts) in PDF 1.2, because the minimal version
+            //     // for hash algorithms is 1.3 (for SHA1)
+            //     if (options.isAppendX()) {
+            //         // if we are in append mode and version should be updated
+            //         // then return false (not possible)
+            //         error = RES.get("console.updateVersionNotPossibleInAppendMode");
+            //         LOGGER.severe(error);
+            //         return new Status(false, error);
+            //     }
+            //     tmpPdfVersion = hashAlgorithm.getPdfVersion();
+            //     LOGGER.info(RES.get("console.updateVersion", new String[]{String.valueOf(reader.getPdfVersion()),
+            //         String.valueOf(tmpPdfVersion)}));
+            // }
             
             final PdfStamper stp = PdfStamper.createSignature(reader, fout, tmpPdfVersion, null, options.isAppendX());
             
@@ -257,14 +267,17 @@ public class PreparePdfToSignLogic implements Runnable {
             if(this.fields != null){
                 for (int i = 0; i < this.fields.size(); i++) {
                     HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
-                    if (((String) field.get("type")).equals("text")) {
+                    if (((String) field.get("type")).equals("text") || ((String) field.get("type")).equals("static_text")) {
 
                         //Replace fields form values
-                        //acroFields.setField("Caixa de texto 1", "PAULO FILIPE MOCEDO DOS SANTOS");
-                        //acroFields.setField("Caixa de texto 2", "ARQUITETO DE SOLUÇÕES");
-                        //acroFields.setField("Caixa de texto 3", "VAULT ID");
+
                         acroFields.setField((String) field.get("name"), (String) field.get("value"));
                         acroFields.setField("form." + (String) field.get("name"), (String) field.get("value"));
+                       
+//                       TextField txf = acroFields.getFieldCache().getOrDefault((String) field.get("name"), null);
+//                        
+//                        txf.setRotation(90);
+//                        acroFields.regenerateField((String) field.get("name"));
                         
                         try {
                             if (((String) field.get("readonly")).equals("true")) {
@@ -298,6 +311,8 @@ public class PreparePdfToSignLogic implements Runnable {
             
             
             final PdfSignatureAppearance sap = stp.getSignatureAppearance();
+            LOGGER.info("PdfSignatureAppearanceSecundary");
+            final PdfSignatureAppearanceSecundary sap2 = new PdfSignatureAppearanceSecundary();
             
             final String reason = options.getReason();
             if (StringUtils.isNotEmpty(reason)) {
@@ -391,10 +406,10 @@ public class PreparePdfToSignLogic implements Runnable {
                 options.setL2Text("");//Set empty text
 
                 options.setPositionLLX(x);
-                options.setPositionLLY(reader.getPageSize(page).getHeight() - y - height);
+                options.setPositionLLY(reader.getPageSizeWithRotation(page).getHeight() - y - height);
 
                 options.setPositionURX(x + width);
-                options.setPositionURY(reader.getPageSize(page).getHeight() - y);
+                options.setPositionURY(reader.getPageSizeWithRotation(page).getHeight() - y);
                 
                 if(options.getVisibleSignatureField() != null){
                     sap.setVisibleSignature(options.getVisibleSignatureField()); //03_Signature Emitente
@@ -441,7 +456,25 @@ public class PreparePdfToSignLogic implements Runnable {
             final int contentEstimated = (int) (Constants.DEFVAL_SIG_SIZE + 2L);
             final HashMap<PdfName, Integer> exc = new HashMap<PdfName, Integer>();
             exc.put(PdfName.CONTENTS, new Integer(contentEstimated * 2 + 2));
-            sap.preClose(exc);
+            
+            for(SecundarySignerOptions secundarySignatureOption: options.getSecundarySignatures()){
+                float x = secundarySignatureOption.getPositionLLX();
+                float y = secundarySignatureOption.getPositionLLY();
+                float width = secundarySignatureOption.getPositionURX(); //Width
+                float height = secundarySignatureOption.getPositionURY(); //Height
+
+                secundarySignatureOption.setPositionLLX(x);
+                secundarySignatureOption.setPositionLLY(reader.getPageSizeWithRotation(secundarySignatureOption.getPage()).getHeight() - y - height);
+
+                secundarySignatureOption.setPositionURX(x + width);
+                secundarySignatureOption.setPositionURY(reader.getPageSizeWithRotation(secundarySignatureOption.getPage()).getHeight() - y);
+            }
+            
+            LOGGER.info("setSecundarySignatureOptions");
+            sap2.setSecundarySignatureOptions(options.getSecundarySignatures());
+            sap2.setAppearance(sap.getAppearance());
+
+            sap.preClose(exc, sap2);
             
             Calendar cal = Calendar.getInstance();
 
@@ -456,6 +489,7 @@ public class PreparePdfToSignLogic implements Runnable {
             System.arraycopy(encodedSig, 0, paddedSig, 0, encodedSig.length);
 
             PdfDictionary dic2 = new PdfDictionary();
+            
             dic2.put(PdfName.CONTENTS, new PdfString(paddedSig).setHexWriting(true));
             LOGGER.info(RES.get("console.closeStream"));
             sap.close(dic2);
