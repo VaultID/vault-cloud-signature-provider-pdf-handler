@@ -1,0 +1,42 @@
+{
+	"info": {
+		"_postman_id": "170adaad-9be9-417c-8e76-55cec8245b2a",
+		"name": "PDF Handler",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4874325"
+	},
+	"item": [
+		{
+			"name": "{{BASE_URI}}/prepare-file-to-signature",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"pdfFile\": \"sample.pdf\",\r\n\t\"append\": true,\r\n\t\"autoFixDocument\": true,\r\n\t\"isVisibleSignature\": true,\r\n\t\"imageFile\": \"signature.png\",\r\n\t\"page\": 1,\r\n\t\"x\": 355,\r\n\t\"y\": 782,\r\n\t\"width\": 230,\r\n\t\"height\": 50,\r\n\t\"reason\": \"My reason\",\r\n\t\"location\": \"My location\",\r\n\t\"contact\": \"My contact\",\r\n\t\"signerName\": \"My Name\",\r\n\t\"subfilter\": \"adbe.pkcs7.detached\",\r\n\t\"type\": \"PdfSignature\",\r\n\t\"fields\": [\r\n\t\t{\r\n\t\t\t\"name\": \"myfield\",\r\n\t\t\t\"type\": \"text\",\r\n\t\t\t\"value\": \"I accept this document!\",\r\n\t\t\t\"readonly\": \"true\"\r\n\t\t}\r\n\t]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BASE_URI}}/prepare-file-to-signature",
+					"host": [
+						"{{BASE_URI}}"
+					],
+					"path": [
+						"prepare-file-to-signature"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
