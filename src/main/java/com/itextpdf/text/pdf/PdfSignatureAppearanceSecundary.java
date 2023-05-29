@@ -11,7 +11,6 @@ import net.sf.jsignpdf.SecundarySignerOptions;
 
 /**
  *
- * @author Paulo Filipe Macedo <paulo.filipe@live.com>
  */
 public class PdfSignatureAppearanceSecundary {
     

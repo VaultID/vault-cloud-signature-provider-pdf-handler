@@ -13,7 +13,6 @@ import org.json.JSONObject;
 /**
  * Description of Helper
  * 
- * @author Paulo Filipe Macedo dos Santos <paulo.filipe@live.com>
  */
 public class Helper {
 

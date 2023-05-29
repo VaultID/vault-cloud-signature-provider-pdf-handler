@@ -82,7 +82,6 @@ import java.util.logging.Logger;
  * Class that takes care of the cryptographic options
  * and appearances that form a signature.
  *  
- * @author Paulo Filipe Macedo <paulo.filipe@live.com>
  * @see https://raw.githubusercontent.com/Sinekarta/sinekarta/master/sinekarta-ds/itext-jdk16/src/main/java/com/itextpdf/text/pdf/PdfSignatureAppearance.java
  */
 public class PdfSignatureAppearance {
@@ -328,6 +327,10 @@ public class PdfSignatureAppearance {
 
     public Certificate getCertificate() {
         return signCertificate;
+    }
+
+    public void setSignAllPages(boolean b) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     // Signature event

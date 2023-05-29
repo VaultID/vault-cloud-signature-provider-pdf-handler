@@ -13,7 +13,6 @@ import com.itextpdf.text.pdf.PdfDate;
  * Implements the timestamp signature dictionary.
  * 
  * @see <https://raw.githubusercontent.com/itext/itextpdf/develop/itext/src/main/java/com/itextpdf/text/pdf/PdfSignature.java>
- * @author Paulo Filipe <paulo.santos@soluti.com.br>
  */
 public class PdfTimestampSignature extends PdfDictionary {
 

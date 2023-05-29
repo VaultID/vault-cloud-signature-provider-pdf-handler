@@ -163,6 +163,8 @@ public class PreparePdfFieldsLogic implements Runnable {
         Throwable tmpException = null;
         FileOutputStream fout = null;
         String error = "";
+        boolean includeAllPages = false;
+        
         try {
             LOGGER.info(RES.get("console.createPdfReader", options.getInFile()));
             PdfReader.unethicalreading = true;
@@ -241,6 +243,11 @@ public class PreparePdfFieldsLogic implements Runnable {
                     HashMap<String, Object> field = (HashMap<String, Object>) fields.get(i);
 
                     int page = (Integer) field.get("page");
+                    
+                    if(page == -100){
+                        includeAllPages = true;
+                    }
+                    
                     if (page < 1 || page > reader.getNumberOfPages()) {
                         page = reader.getNumberOfPages();
                     }
@@ -372,8 +379,19 @@ public class PreparePdfFieldsLogic implements Runnable {
 
                         PdfFormField personal_name = pdfField.getTextField();
 
+                        if(includeAllPages){
+                            
+                            for (int pg = 1; pg <= reader.getNumberOfPages(); pg++) {
+                                
+                                stp.addAnnotation(personal_name, pg);
+                                
+                            }
+                            
+                        }else{
 
-                        stp.addAnnotation(personal_name, page);
+                            stp.addAnnotation(personal_name, page);
+                        
+                        }
 
                        
 
@@ -389,7 +407,21 @@ public class PreparePdfFieldsLogic implements Runnable {
                             pdfField.setBorderColor(borderColor);
                             pdfField.setBorderStyle(borderStyle);
                         }
-                        stp.addAnnotation(pdfField.getField(), page);
+                        
+                        if(includeAllPages){
+                            
+                            for (int pg = 1; pg <= reader.getNumberOfPages(); pg++) {
+                                
+                                stp.addAnnotation(pdfField.getField(), pg);
+                                
+                            }
+                            
+                        }else{
+                        
+                            stp.addAnnotation(pdfField.getField(), page);
+                        
+                        }
+                        
                     } else {
                         throw new Exception("Invalid field type");
                     }

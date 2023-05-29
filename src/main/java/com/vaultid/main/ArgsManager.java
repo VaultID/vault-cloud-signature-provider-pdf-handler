@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 /**
  *
- * @author Paulo Filipe Macedo dos Santos <paulo.filipe@live.com>
  */
 public class ArgsManager {
     
