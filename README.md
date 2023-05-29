@@ -59,14 +59,17 @@ Run `mvn pakage` to create the JAR file in the `target` folder.
 
 Run with `java -jar <file>` to see the options to start, stop, and restart the service.
 
+
+
 ## Built-in API - SYNC MODE ##
+
 | PATH | /prepare-file-fields-attachments |
 |--|--|
 | Method | POST |
 | Headers | Content-Type: application/json |
 
-``` 
 Request
+``` 
 {
 	"pdfFile": "/tmp/pdfexemplo.pdf",
 	"append": true,
@@ -93,8 +96,10 @@ Request
 		"description": "My favorite attribute certificate xpto123",
 	}]
 }
+```
 
 Response:
+```
 {
     "file": "/tmp/pdfexemplo_prepared.pdf",
     "message": "File prepareted!!!!",
@@ -102,16 +107,17 @@ Response:
 }
 ``` 
       
-PDF Handler - Preparer to signature
+
 
 ## Built-in API - SYNC MODE ##
+
 | PATH | /prepare-file-to-signature |
 |--|--|
 | Method | POST |
 | Headers | Content-Type: application/json |
 
-``` 
-Request Sample
+Request Sample 1
+```
 {
 	"pdfFile": "/tmp/pdfexemplo.pdf",
 	"append": true,
@@ -126,7 +132,7 @@ Request Sample
 	"reason": "My reason",
 	"location": "My location",
 	"contact": "My contact",
-	"signerName": "LUAN",
+	"signerName": "My Name",
 	"subfilter": "adbe.pkcs7.detached",
         "type": "PdfSignature",
 	"fields": [
@@ -138,8 +144,10 @@ Request Sample
 		}
 	]
 }
+```
 
 Request Sample 2
+```
 {
 	"pdfFile": "/tmp/pdfexemplo.pdf",
 	"append": true,
@@ -149,9 +157,11 @@ Request Sample 2
 	"subfilter": "ETSI.RFC3161",
 	"type": "PdfTimestampSignature"
 }
+```
 
 
 Response:
+```
 {
     "file": "/tmp/pdfexemplo_prepared.pdf",
     "message": "File prepareted!!!!",
