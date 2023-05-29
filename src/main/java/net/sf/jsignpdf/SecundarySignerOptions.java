@@ -2,7 +2,6 @@ package net.sf.jsignpdf;
 
 /**
  *
- * @author paulofilipe
  */
 public class SecundarySignerOptions {
     

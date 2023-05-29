@@ -6,7 +6,6 @@ import java.util.Map;
 /**
  * Description of AbstractController
  *
- * @author Paulo Filipe Macedo dos Santos <paulo.filipe@live.com>
  */
 public abstract class AbstractController {
 

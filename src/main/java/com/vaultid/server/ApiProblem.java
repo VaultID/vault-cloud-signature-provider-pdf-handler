@@ -3,7 +3,6 @@ package com.vaultid.server;
 /**
  * Description of ApiProblem
  * 
- * @author Paulo Filipe Macedo dos Santos <paulo.filipe@live.com>
  */
 public class ApiProblem {
     

@@ -6,8 +6,7 @@ import java.util.List;
 
 /**
  *
- * @author Paulo Filipe Macedo dos Santos <paulo.filipe@live.com>
- * @author Luan Lino Matias dos Santos <luansantosmatias@hotmail.com>
+ * @author Luan Lino Matias dos Santos <luan.matias@soluti.com.br>
  */
 public class RouteManager {
     
