@@ -2,10 +2,19 @@
 
 # Vault Cloud - Signature Provider PDF Handler #
 
-PDF Handler - Preparere pdf fields/attachments before signature
+**PDF Handler** - Preparere pdf fields/attachments before signature
+
+
+**PDF Handler** - Prepara campos e anexos no PDF antes da assinatura
+
+
+
 
 ## License
 
+Official AGPLv3 license available <https://www.gnu.org/licenses/agpl-3.0.html>
+
+```
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
 published by the Free Software Foundation, either version 3 of the
@@ -18,7 +27,37 @@ GNU Affero General Public License for more details.
 
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
 
+
+## Licença de Uso
+
+Tradução não oficial da AGPLv3 disponível em <http://licencas.softwarelivre.org/agpl-3.0.pt-br.html>
+
+
+```
+Este programa é um software livre: você pode redistribuí-lo e/ou
+modificá-lo sob os termos da Licença Pública Geral Affero GNU,
+conforme publicado pela Free Software Foundation, seja a versão 3
+da Licença ou (a seu critério) qualquer versão posterior.
+
+Este programa é distribuído na esperança de que seja útil,
+mas SEM QUALQUER GARANTIA; sem a garantia implícita de
+COMERCIALIZAÇÃO OU ADEQUAÇÃO A UM DETERMINADO PROPÓSITO. Veja a
+Licença Pública Geral Affero GNU para obter mais detalhes.
+
+Você deve ter recebido uma cópia da Licença Pública Geral Affero GNU
+junto com este programa. Se não, veja <https://www.gnu.org/licenses/>.
+```
+
+
+## Building
+
+Run `mvn pakage` to create the JAR file in the `target` folder.
+
+## Running
+
+Run with `java -jar <file>` to see the options to start, stop, and restart the service.
 
 ## Built-in API - SYNC MODE ##
 | PATH | /prepare-file-fields-attachments |
