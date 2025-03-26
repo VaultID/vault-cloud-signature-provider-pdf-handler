@@ -404,6 +404,10 @@ public class PreparePdfToSignLogic implements Runnable {
                 float width = options.getPositionURX(); //Width
                 float height = options.getPositionURY(); //Height
                 options.setL2Text("");//Set empty text
+                float yLimit = reader.getPageSizeWithRotation(page).getHeight() - height;
+                if (y > yLimit) {
+                    y = yLimit;
+                }
 
                 options.setPositionLLX(x);
                 options.setPositionLLY(reader.getPageSizeWithRotation(page).getHeight() - y - height);
