@@ -57,6 +57,8 @@ import com.itextpdf.text.io.RASInputStream;
 import com.itextpdf.text.io.RandomAccessSource;
 import com.itextpdf.text.io.RandomAccessSourceFactory;
 import com.itextpdf.text.pdf.AcroFields.Item;
+import com.itextpdf.text.pdf.PdfSignatureAppearance.RenderingMode;
+import com.itextpdf.text.pdf.PdfSignatureAppearance.SignatureEvent;
 import com.itextpdf.text.pdf.interfaces.PdfVersion;
 import com.itextpdf.text.pdf.security.CertificateInfo;
 import com.itextpdf.text.pdf.security.CertificateInfo.X500Name;
@@ -95,6 +97,7 @@ public class PdfSignatureAppearance {
         signDate = new GregorianCalendar();
         fieldName = getNewSigName();
         signatureCreator = Version.getInstance().getVersion();
+        this.signAllPages = false;
     }
 
 	/*
@@ -151,6 +154,8 @@ public class PdfSignatureAppearance {
 
     /** Holds value of property signDate. */
     private Calendar signDate;
+
+    private boolean signAllPages;
 
     /**
      * Gets the signing reason.
@@ -329,8 +334,8 @@ public class PdfSignatureAppearance {
         return signCertificate;
     }
 
-    public void setSignAllPages(boolean b) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void setSignAllPages(boolean signAllPages) {
+        this.signAllPages = signAllPages;
     }
 
     // Signature event
@@ -1318,16 +1323,25 @@ public class PdfSignatureAppearance {
                 sigField.setWidget(getPageRect(), null);
             else
                 sigField.setWidget(new Rectangle(0, 0), null);
-            sigField.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, getAppearance());
-            sigField.setPage(pagen);
-            
-            writer.addAnnotation(sigField, pagen);
-            
-            //Configure and run secundary engine
-            helperEngine.setWriter(writer);
-            helperEngine.setName(name + "secundary");
-            helperEngine.setRefSign(refSig);
-            helperEngine.run();
+
+            if (this.signAllPages) {
+                for (int pg = 1; pg <= writer.reader.getNumberOfPages(); pg++) {
+                    sigField.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, getAppearance());
+                    sigField.setPage(pg);
+                    writer.addAnnotation(sigField, pg);
+                }
+            } else {
+                sigField.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, getAppearance());
+                sigField.setPage(pagen);
+                
+                writer.addAnnotation(sigField, pagen);
+                
+                //Configure and run secundary engine
+                helperEngine.setWriter(writer);
+                helperEngine.setName(name + "secundary");
+                helperEngine.setRefSign(refSig);
+                helperEngine.run();
+            }
         }
 
         exclusionLocations = new HashMap<PdfName, PdfLiteral>();
