@@ -71,17 +71,17 @@ public class PdfSignatureAppearanceSecundary {
                 fieldLock = this.fieldLock;
             }
             
-//            PdfTemplate appearance = new PdfTemplate(writer);;
-//            appearance.setBoundingBox(rect);
-//            writer.addDirectTemplateSimple(appearance, new PdfName("n2"));
-//            System.out.println("Get Image: " + option.getBgImgPath());
-//            final Image image = Image.getInstance(option.getBgImgPath());
-//            if (image != null) {
-//                appearance.addImage(image, rect.getWidth(), 0, 0, rect.getHeight(), 0, 0);
-//            }
+           PdfTemplate appearance = new PdfTemplate(writer);
+           appearance.setBoundingBox(rect);
+           writer.addDirectTemplateSimple(appearance, new PdfName("n2"));
+           System.out.println("Get Image: " + option.getBgImgPath());
+           final Image image = Image.getInstance(option.getBgImgPath());
+           if (image != null) {
+               appearance.addImage(image, rect.getWidth(), 0, 0, rect.getHeight(), 0, 0);
+           }
 
-            final Image image = Image.getInstance(option.getBgImgPath());            
-            this.appearance.addImage(image, this.appearance.getBoundingBox().getWidth(), 0, 0, this.appearance.getBoundingBox().getHeight(), 0, 0);
+            // final Image image = Image.getInstance(option.getBgImgPath());            
+            // this.appearance.addImage(image, this.appearance.getBoundingBox().getWidth(), 0, 0, this.appearance.getBoundingBox().getHeight(), 0, 0);
             
             sigFieldRepeat.setWidget(rect, null);
             sigFieldRepeat.setAppearance(PdfAnnotation.APPEARANCE_NORMAL, this.appearance);
