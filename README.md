@@ -53,7 +53,7 @@ junto com este programa. Se não, veja <https://www.gnu.org/licenses/>.
 
 ## Building
 
-Run `mvn pakage` to create the JAR file in the `target` folder.
+Run `mvn deploy` to create the JAR file in the `target` folder.
 
 ## Running
 
