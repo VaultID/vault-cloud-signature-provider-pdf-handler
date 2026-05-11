@@ -289,7 +289,7 @@ public class PreparePdfToSignLogic implements Runnable {
                     } else if (((String) field.get("type")).equals("image")) {
                         PushbuttonField ad = acroFields.getNewPushbuttonFromField((String) field.get("name"));
                         ad.setLayout(PushbuttonField.LAYOUT_ICON_ONLY);
-                        ad.setProportionalIcon(true);
+                        ad.setProportionalIcon(false);
                         ad.setImage(Image.getInstance((String) field.get("value")));
                         acroFields.replacePushbuttonField((String) field.get("name"), ad.getField());
                     }
